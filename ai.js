@@ -1,34 +1,61 @@
-const WIN_LINES = [
-  [0, 1, 2],
-  [3, 4, 5],
-  [6, 7, 8],
-  [0, 3, 6],
-  [1, 4, 7],
-  [2, 5, 8],
-  [0, 4, 8],
-  [2, 4, 6],
-];
+function generateWinLines(rows, cols, winLength) {
+  const lines = [];
 
-/**
- * Returns whether placing `mark` at `index` on `cells` would complete a winning line.
- */
-function wouldWin(cells, index, mark) {
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c <= cols - winLength; c++) {
+      const line = [];
+      for (let k = 0; k < winLength; k++) line.push(r * cols + c + k);
+      lines.push(line);
+    }
+  }
+
+  for (let c = 0; c < cols; c++) {
+    for (let r = 0; r <= rows - winLength; r++) {
+      const line = [];
+      for (let k = 0; k < winLength; k++) line.push((r + k) * cols + c);
+      lines.push(line);
+    }
+  }
+
+  for (let r = 0; r <= rows - winLength; r++) {
+    for (let c = 0; c <= cols - winLength; c++) {
+      const line = [];
+      for (let k = 0; k < winLength; k++) line.push((r + k) * cols + (c + k));
+      lines.push(line);
+    }
+  }
+
+  for (let r = 0; r <= rows - winLength; r++) {
+    for (let c = winLength - 1; c < cols; c++) {
+      const line = [];
+      for (let k = 0; k < winLength; k++) line.push((r + k) * cols + (c - k));
+      lines.push(line);
+    }
+  }
+
+  return lines;
+}
+
+function wouldWin(cells, index, mark, winLines) {
   const next = cells.slice();
   next[index] = mark;
-  for (const [a, b, c] of WIN_LINES) {
-    if (next[a] === mark && next[b] === mark && next[c] === mark) return true;
+  for (const line of winLines) {
+    if (line.includes(index) && line.every((i) => next[i] === mark)) return true;
   }
   return false;
 }
 
 /**
  * Returns the best move for the computer.
- * Strategy: (1) win if possible, (2) block human win, (3) center, then corners, then edges.
+ * Strategy: (1) win if possible, (2) block human win,
+ * (3) pick cell participating in the most unblocked winning lines.
  * @param {Array<string|null>} cells - current board state
  * @param {string} computerMark - "X" or "O"
+ * @param {{ rows?: number, cols?: number, winLength?: number }} config
  * @returns {number|null} - cell index to play, or null if no move
  */
-export function getBestMove(cells, computerMark) {
+export function getBestMove(cells, computerMark, { rows = 3, cols = 3, winLength = 3 } = {}) {
+  const winLines = generateWinLines(rows, cols, winLength);
   const humanMark = computerMark === "X" ? "O" : "X";
   const emptyIndices = cells
     .map((v, i) => (v === null ? i : null))
@@ -38,23 +65,32 @@ export function getBestMove(cells, computerMark) {
 
   // 1. Win if possible
   for (const i of emptyIndices) {
-    if (wouldWin(cells, i, computerMark)) return i;
+    if (wouldWin(cells, i, computerMark, winLines)) return i;
   }
 
   // 2. Block human from winning
-  for (let i = 0; i < 9; i++) {
-    if (cells[i] === null && wouldWin(cells, i, humanMark)) return i;
+  for (const i of emptyIndices) {
+    if (wouldWin(cells, i, humanMark, winLines)) return i;
   }
 
-  // 3. Prefer center, then corners, then edges
-  const center = 4;
-  const corners = [0, 2, 6, 8];
-  const edges = [1, 3, 5, 7];
-  const order = [center, ...corners, ...edges];
-
-  for (const i of order) {
-    if (cells[i] === null) return i;
+  // 3. Pick cell that participates in the most winning lines not blocked by the opponent
+  const scores = new Array(rows * cols).fill(0);
+  for (const line of winLines) {
+    const hasHuman = line.some((i) => cells[i] === humanMark);
+    if (!hasHuman) {
+      for (const i of line) {
+        if (cells[i] === null) scores[i]++;
+      }
+    }
   }
 
-  return null;
+  let best = emptyIndices[0];
+  let bestScore = -1;
+  for (const i of emptyIndices) {
+    if (scores[i] > bestScore) {
+      bestScore = scores[i];
+      best = i;
+    }
+  }
+  return best;
 }

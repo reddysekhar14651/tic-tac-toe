@@ -9,19 +9,14 @@
 <body>
   <div class="game">
     <h1>Tic Tac Toe vs Computer</h1>
-    <p class="status" id="status">Your turn (X)</p>
-    <div class="board" id="board">
-      <button class="cell" data-index="0" aria-label="Cell 1"></button>
-      <button class="cell" data-index="1" aria-label="Cell 2"></button>
-      <button class="cell" data-index="2" aria-label="Cell 3"></button>
-      <button class="cell" data-index="3" aria-label="Cell 4"></button>
-      <button class="cell" data-index="4" aria-label="Cell 5"></button>
-      <button class="cell" data-index="5" aria-label="Cell 6"></button>
-      <button class="cell" data-index="6" aria-label="Cell 7"></button>
-      <button class="cell" data-index="7" aria-label="Cell 8"></button>
-      <button class="cell" data-index="8" aria-label="Cell 9"></button>
+    <div class="config">
+      <label>Rows <input type="number" id="rows" value="3" min="3" max="10"></label>
+      <label>Cols <input type="number" id="cols" value="3" min="3" max="10"></label>
+      <label>Win <input type="number" id="win-length" value="3" min="3" max="10"></label>
     </div>
-    <button class="reset" id="reset">New game</button>
+    <p class="status" id="status"></p>
+    <div class="board" id="board"></div>
+    <button class="reset" id="reset">New Game</button>
     <p class="mode-link"><a href="index.html">← Two players</a></p>
   </div>
   <script type="module" src="script-vs-computer.js"></script>

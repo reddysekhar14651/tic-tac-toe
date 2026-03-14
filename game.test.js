@@ -173,3 +173,71 @@ describe("createGame", () => {
     });
   });
 });
+
+describe("createGame with custom config", () => {
+  it("creates a 4x4 board with 16 cells", () => {
+    const game = createGame({ rows: 4, cols: 4, winLength: 4 });
+    expect(game.cells).toHaveLength(16);
+    expect(game.rows).toBe(4);
+    expect(game.cols).toBe(4);
+    expect(game.winLength).toBe(4);
+  });
+
+  it("detects horizontal win on a 4x4 board with winLength 4", () => {
+    // Row 0: indices 0,1,2,3
+    const game = createGame({ rows: 4, cols: 4, winLength: 4 });
+    game.makeMove(0); // X
+    game.makeMove(4); // O
+    game.makeMove(1); // X
+    game.makeMove(5); // O
+    game.makeMove(2); // X
+    game.makeMove(6); // O
+    const result = game.makeMove(3); // X wins row 0
+    expect(result.status).toEqual({ type: "winner", winner: "X" });
+  });
+
+  it("does not win with only 3 in a row on a 4x4 board with winLength 4", () => {
+    const game = createGame({ rows: 4, cols: 4, winLength: 4 });
+    game.makeMove(0); // X
+    game.makeMove(4); // O
+    game.makeMove(1); // X
+    game.makeMove(5); // O
+    const result = game.makeMove(2); // X has 3 in row 0, but needs 4
+    expect(result.status.type).toBe("turn");
+  });
+
+  it("detects vertical win on a 5x3 board with winLength 3", () => {
+    // cols=3, rows=5: column 0 = indices 0,3,6,9,12
+    const game = createGame({ rows: 5, cols: 3, winLength: 3 });
+    game.makeMove(0); // X
+    game.makeMove(1); // O
+    game.makeMove(3); // X
+    game.makeMove(2); // O
+    const result = game.makeMove(6); // X wins col 0
+    expect(result.status).toEqual({ type: "winner", winner: "X" });
+  });
+
+  it("detects diagonal win on a 4x4 board with winLength 3", () => {
+    // Top-left diagonal starting at (0,0): indices 0,5,10
+    const game = createGame({ rows: 4, cols: 4, winLength: 3 });
+    game.makeMove(0);  // X
+    game.makeMove(1);  // O
+    game.makeMove(5);  // X
+    game.makeMove(2);  // O
+    const result = game.makeMove(10); // X diagonal win
+    expect(result.status).toEqual({ type: "winner", winner: "X" });
+  });
+
+  it("rejects out-of-range index for custom board size", () => {
+    const game = createGame({ rows: 4, cols: 4, winLength: 4 });
+    expect(game.makeMove(16).success).toBe(false);
+    expect(game.makeMove(-1).success).toBe(false);
+  });
+
+  it("exposes rows, cols, winLength on the game object", () => {
+    const game = createGame({ rows: 5, cols: 6, winLength: 4 });
+    expect(game.rows).toBe(5);
+    expect(game.cols).toBe(6);
+    expect(game.winLength).toBe(4);
+  });
+});

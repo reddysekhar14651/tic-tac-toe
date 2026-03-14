@@ -81,3 +81,33 @@ describe("getBestMove", () => {
     });
   });
 });
+
+describe("getBestMove with custom config", () => {
+  it("takes winning move on a 4x4 board with winLength 4", () => {
+    // Row 0: O at 0,1,2 — win at 3
+    const cells = Array(16).fill(null);
+    cells[0] = "O"; cells[1] = "O"; cells[2] = "O";
+    cells[4] = "X"; cells[5] = "X";
+    expect(getBestMove(cells, "O", { rows: 4, cols: 4, winLength: 4 })).toBe(3);
+  });
+
+  it("blocks human win on a 4x4 board with winLength 4", () => {
+    // Row 1: X at 4,5,6 — block at 7
+    const cells = Array(16).fill(null);
+    cells[4] = "X"; cells[5] = "X"; cells[6] = "X";
+    cells[0] = "O"; cells[1] = "O";
+    expect(getBestMove(cells, "O", { rows: 4, cols: 4, winLength: 4 })).toBe(7);
+  });
+
+  it("returns a valid index on an empty 5x5 board with winLength 4", () => {
+    const cells = Array(25).fill(null);
+    const move = getBestMove(cells, "O", { rows: 5, cols: 5, winLength: 4 });
+    expect(move).toBeGreaterThanOrEqual(0);
+    expect(move).toBeLessThan(25);
+  });
+
+  it("returns null when board is full on a custom-size board", () => {
+    const cells = Array(16).fill("X");
+    expect(getBestMove(cells, "O", { rows: 4, cols: 4, winLength: 4 })).toBe(null);
+  });
+});
