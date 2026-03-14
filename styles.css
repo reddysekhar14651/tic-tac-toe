@@ -1,0 +1,111 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(145deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  font-family: "Segoe UI", system-ui, sans-serif;
+  color: #e8e8e8;
+}
+
+.game {
+  text-align: center;
+  padding: 2rem;
+}
+
+h1 {
+  font-size: 2rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.5rem;
+  color: #eee;
+}
+
+.status {
+  font-size: 1.1rem;
+  margin-bottom: 1.5rem;
+  min-height: 1.5em;
+  color: #a0aec0;
+}
+
+.board {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+  max-width: 320px;
+  margin: 0 auto 1.5rem;
+}
+
+.cell {
+  aspect-ratio: 1;
+  border: 2px solid #2d3748;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 8px;
+  font-size: 2.5rem;
+  font-weight: 700;
+  cursor: pointer;
+  color: #e8e8e8;
+  transition: background 0.2s, border-color 0.2s, transform 0.1s;
+}
+
+.cell:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: #4a5568;
+}
+
+.cell:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.cell:disabled {
+  cursor: default;
+}
+
+.cell.x {
+  color: #63b3ed;
+}
+
+.cell.o {
+  color: #f687b3;
+}
+
+.reset {
+  padding: 0.6rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1a1a2e;
+  background: #e8e8e8;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+}
+
+.reset:hover {
+  background: #fff;
+  transform: translateY(-1px);
+}
+
+.reset:active {
+  transform: translateY(0);
+}
+
+.mode-link {
+  margin-top: 1rem;
+  font-size: 0.9rem;
+}
+
+.mode-link a {
+  color: #63b3ed;
+  text-decoration: none;
+}
+
+.mode-link a:hover {
+  text-decoration: underline;
+}
